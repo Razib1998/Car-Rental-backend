@@ -1,13 +1,15 @@
 import express, { Request, Response } from "express";
 import globalErrorHandler from "./app/Middlewares/GlobalErrorHandler";
-import { UserRoutes } from "./app/modules/Auth/auth.route";
+import { AuthRoutes } from "./app/modules/Auth/auth.route";
+import { CarRoutes } from "./app/modules/Car/car.route";
 
 const app = express();
 // Parsers
 
 app.use(express.json());
 
-app.use("/api/auth", UserRoutes);
+app.use("/api/auth", AuthRoutes);
+app.use("/api/cars", CarRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello Next Level!");
