@@ -8,3 +8,5 @@ export type TUser = {
   phone: string;
   address: string;
 };
+
+export type TUserRole = keyof typeof USER_Role;

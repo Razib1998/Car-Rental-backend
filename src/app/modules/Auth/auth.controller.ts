@@ -14,7 +14,18 @@ const createUser: RequestHandler = catchAsync(async (req, res, next) => {
     data: result,
   });
 });
+//eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+const login: RequestHandler = catchAsync(async (req, res, next) => {
+  const result = await AuthServices.loginUser(req.body);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User logged in Successfully",
+    data: result,
+  });
+});
 
 export const AuthControllers = {
   createUser,
+  login,
 };
