@@ -1,10 +1,29 @@
 import { Types } from "mongoose";
+import { TCar } from "../Car/car.interface";
 
-export type TBookings = {
-  carId: Types.ObjectId;
+export interface TBookings extends TCar {
+  carId?: string;
   date: string;
   startTime: string;
-  endTime: string;
-  user: Types.ObjectId;
+  endTime: string | null;
+
+  car: {
+    _id: Types.ObjectId;
+    name: string;
+    description: string;
+    color: string;
+    isElectric: boolean;
+    features: string[];
+    pricePerHour: number;
+    status: string;
+  };
+  user: {
+    _id: Types.ObjectId;
+    name: string;
+    email: string;
+    role: string;
+    phone: string;
+    address: string;
+  };
   totalCost: number;
-};
+}
