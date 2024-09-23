@@ -1,7 +1,8 @@
-import { Bookings } from "../Bookings/bookings.model";
+import httpStatus from "http-status";
+import AppError from "../../errors/AppError";
+
 import { TCar } from "./car.interface";
 import { Car } from "./car.model";
-import { convertTimeToHours } from "./car.utils";
 
 const createCarIntoDB = async (payload: TCar) => {
   const result = await Car.create(payload);
@@ -22,7 +23,7 @@ const deletedCar = async (id: string) => {
 
   const isCarExists = await Car.findById(id);
   if (!isCarExists) {
-    throw new Error("Car not fond");
+    throw new AppError(httpStatus.NOT_FOUND, "Car not fond");
   }
 
   const result = await Car.findByIdAndUpdate(
@@ -41,7 +42,7 @@ const updateCar = async (id: string, payload: Partial<TCar>) => {
   const existingCar = await Car.findById(id);
 
   if (!existingCar) {
-    throw new Error("Car not found");
+    throw new AppError(httpStatus.NOT_FOUND, "Car not found");
   }
 
   const updateCarBasicInfo = await Car.findByIdAndUpdate(id, remainingCarInfo, {
@@ -50,7 +51,7 @@ const updateCar = async (id: string, payload: Partial<TCar>) => {
   });
 
   if (!updateCarBasicInfo) {
-    throw new Error("Failed to update car info");
+    throw new AppError(httpStatus.BAD_REQUEST, "Failed to update car info");
   }
 
   const existingCarFeatures = existingCar.features || [];
@@ -82,38 +83,10 @@ const updateCar = async (id: string, payload: Partial<TCar>) => {
   return result;
 };
 
-type TReturnData = {
-  bookingId: string;
-  endTime: string;
-};
-
-const returnCar = async (payload: TReturnData) => {
-  const { bookingId, endTime } = payload;
-  const isBookingExist = await Bookings.findById(bookingId);
-  if (!isBookingExist) {
-    throw new Error("Booking not found");
-  }
-
-  // Now calculate the total cost..
-
-  const start = convertTimeToHours(isBookingExist.startTime);
-
-  const end = convertTimeToHours(endTime);
-
-  const duration = start - end;
-  const totalCost = duration * isBookingExist.car.pricePerHour;
-  const result = await Bookings.findByIdAndUpdate(bookingId, {
-    endTime,
-    totalCost,
-  });
-  return null;
-};
-
 export const CarServices = {
   createCarIntoDB,
   getAllCarsFromDB,
   getSingleCarFromDB,
   deletedCar,
   updateCar,
-  returnCar,
 };

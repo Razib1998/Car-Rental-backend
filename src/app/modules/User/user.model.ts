@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-this-alias */
 import { model, Schema } from "mongoose";
 import { TUser } from "./user.interface";
 
@@ -15,6 +14,7 @@ const userSchema = new Schema<TUser>(
     },
     password: {
       type: String,
+      select: 0,
       required: [true, "Password is required"],
     },
     role: {

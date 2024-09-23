@@ -6,6 +6,8 @@ import { JwtPayload } from "jsonwebtoken";
 import jwt from "jsonwebtoken";
 import { User } from "../modules/User/user.controller";
 import config from "../config";
+import AppError from "../errors/AppError";
+import httpStatus from "http-status";
 
 declare global {
   namespace Express {
@@ -20,7 +22,7 @@ export const auth = (...requiredRoles: TUserRole[]) => {
     const token = (req.headers.authorization as string).split(" ")[1];
 
     if (!token) {
-      throw new Error("You are not authorized");
+      throw new AppError(httpStatus.UNAUTHORIZED, "You are not authorized");
     }
 
     const decoded = jwt.verify(
@@ -32,11 +34,11 @@ export const auth = (...requiredRoles: TUserRole[]) => {
 
     const user = await User.findOne({ email: email });
     if (!user) {
-      throw new Error("User not exists");
+      throw new AppError(httpStatus.NOT_FOUND, "User not exists");
     }
 
     if (requiredRoles && !requiredRoles.includes(role)) {
-      throw new Error("You are not authorized");
+      throw new AppError(httpStatus.UNAUTHORIZED, "You are not authorized");
     }
     req.user = decoded as JwtPayload;
     next();

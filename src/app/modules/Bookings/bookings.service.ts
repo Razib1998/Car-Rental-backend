@@ -2,6 +2,8 @@ import { JwtPayload } from "jsonwebtoken";
 import { Car } from "../Car/car.model";
 import { TBookings } from "./bookings.interface";
 import { Bookings } from "./bookings.model";
+import AppError from "../../errors/AppError";
+import httpStatus from "http-status";
 
 const createBookingIntoDB = async (
   payload: TBookings,
@@ -13,7 +15,7 @@ const createBookingIntoDB = async (
 
   const isExistsCar = await Car.findById(carId);
   if (!isExistsCar || isExistsCar?.status === "unavailable") {
-    throw new Error("Car is not available");
+    throw new AppError(httpStatus.BAD_REQUEST, "Car is not available");
   }
 
   const user = {

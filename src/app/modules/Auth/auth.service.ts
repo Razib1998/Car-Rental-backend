@@ -1,20 +1,18 @@
 import config from "../../config";
-import { USER_Role } from "../User/user.constant";
 import { User } from "../User/user.controller";
 import { TUser } from "../User/user.interface";
 import bcryptjs from "bcryptjs";
 import { TAuth } from "./auth.interface";
 import jwt from "jsonwebtoken";
+import AppError from "../../errors/AppError";
+import httpStatus from "http-status";
 
 const createUserIntoDB = async (payload: TUser) => {
   // check if the user is already existed,
   const user = await User.findOne({ email: payload.email });
   if (user) {
-    throw new Error("User Already Exists");
+    throw new AppError(400, "User Already Exists");
   }
-  // set User role
-
-  payload.role = USER_Role.user;
 
   // hash password..
 
@@ -31,7 +29,7 @@ const loginUser = async (payload: TAuth) => {
   const user = await User.findOne({ email: payload?.email });
 
   if (!user) {
-    throw new Error("User not found");
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
   }
 
   //  check password..
@@ -42,7 +40,7 @@ const loginUser = async (payload: TAuth) => {
   );
 
   if (!isMatchedPassword) {
-    throw new Error("Password did not match");
+    throw new AppError(httpStatus.NOT_FOUND, "Password did not match");
   }
 
   // Now create the access token..

@@ -3,6 +3,7 @@ import globalErrorHandler from "./app/Middlewares/GlobalErrorHandler";
 import { AuthRoutes } from "./app/modules/Auth/auth.route";
 import { CarRoutes } from "./app/modules/Car/car.route";
 import { BookingsRoutes } from "./app/modules/Bookings/bookings.route";
+import notFound from "./app/Middlewares/notFound";
 
 const app = express();
 // Parsers
@@ -18,5 +19,6 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use(globalErrorHandler);
+app.use(notFound);
 
 export default app;

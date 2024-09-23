@@ -17,7 +17,6 @@ router.post(
 router.get("/", CarControllers.getAllCars);
 router.get("/:id", CarControllers.getSingleCar);
 router.delete("/:id", CarControllers.deletedCar);
-router.put("/return", CarControllers.returnCar);
 router.put(
   "/:id",
   auth(USER_Role.admin),

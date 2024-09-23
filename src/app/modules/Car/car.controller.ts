@@ -67,25 +67,10 @@ const updatedCar: RequestHandler = catchAsync(
   }
 );
 
-const returnCar: RequestHandler = catchAsync(
-  // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
-  async (req, res, next) => {
-    const carReturnData = req.body;
-    const result = await CarServices.returnCar(carReturnData);
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: "Car return is Successfully!",
-      data: result,
-    });
-  }
-);
-
 export const CarControllers = {
   createCar,
   getAllCars,
   getSingleCar,
   deletedCar,
   updatedCar,
-  returnCar,
 };
