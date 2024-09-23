@@ -5,8 +5,7 @@ export interface TBookings extends TCar {
   carId?: string;
   date: string;
   startTime: string;
-  endTime: string | null;
-
+  endTime: string;
   car: {
     _id: Types.ObjectId;
     name: string;

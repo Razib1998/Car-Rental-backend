@@ -56,8 +56,13 @@ const getAllBookingsFromDB = async () => {
   const result = await Bookings.find();
   return result;
 };
+const getMyBookingsFromDB = async (email: string) => {
+  const result = await Bookings.find({ "user.email": email });
+  return result;
+};
 
 export const BookingServices = {
   createBookingIntoDB,
   getAllBookingsFromDB,
+  getMyBookingsFromDB,
 };

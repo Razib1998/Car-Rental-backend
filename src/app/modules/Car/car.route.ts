@@ -9,13 +9,20 @@ const router = express.Router();
 
 router.post(
   "/",
-  validateRequest(CarValidation.createCarValidationSchema),
   auth(USER_Role.admin),
+  validateRequest(CarValidation.createCarValidationSchema),
+
   CarControllers.createCar
 );
 router.get("/", CarControllers.getAllCars);
 router.get("/:id", CarControllers.getSingleCar);
 router.delete("/:id", CarControllers.deletedCar);
-router.put("/:id", CarControllers.updatedCar);
+router.put("/return", CarControllers.returnCar);
+router.put(
+  "/:id",
+  auth(USER_Role.admin),
+  validateRequest(CarValidation.updateCarValidationSchema),
+  CarControllers.updatedCar
+);
 
 export const CarRoutes = router;

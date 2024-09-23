@@ -1,21 +1,69 @@
 /* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { NextFunction, Request, Response } from "express";
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
-const globalErrorHandler = (
-  err: any,
-  req: Request,
-  res: Response,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  next: NextFunction
-) => {
-  const statusCode = 500;
-  const message = err.message || "Something Went Wrong";
+import { ErrorRequestHandler } from "express";
+import { ZodError } from "zod";
+import handleZodError from "../errors/handleZodError";
+import config from "../config";
+import handleCastError from "../errors/handleCastError";
+import { TErrorSources } from "../interface/error.interface";
+import AppError from "../errors/AppError";
+import handleValidationError from "../errors/handleValidationError";
+
+const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
+  let statusCode = 500;
+  let message = "Something went wrong";
+  let errorSources: TErrorSources = [
+    {
+      path: "",
+      message: "Something went wrong!",
+    },
+  ];
+
+  if (err instanceof ZodError) {
+    const simplifiedError = handleZodError(err);
+    statusCode = simplifiedError?.statusCode;
+    message = simplifiedError?.message;
+    errorSources = simplifiedError?.errorSources;
+  } else if (err?.name === "ValidationError") {
+    const simplifiedError = handleValidationError(err);
+    statusCode = simplifiedError?.statusCode;
+    message = simplifiedError?.message;
+    errorSources = simplifiedError?.errorSources;
+  } else if (err?.name === "CastError") {
+    const simplifiedError = handleCastError(err);
+    statusCode = simplifiedError?.statusCode;
+    message = simplifiedError?.message;
+    errorSources = simplifiedError?.errorSources;
+  } else if (err?.code === 11000) {
+    const simplifiedError = handleCastError(err);
+    statusCode = simplifiedError?.statusCode;
+    message = simplifiedError?.message;
+    errorSources = simplifiedError?.errorSources;
+  } else if (err instanceof AppError) {
+    statusCode = err?.statusCode;
+    message = err.message;
+    errorSources = [
+      {
+        path: "",
+        message: err?.message,
+      },
+    ];
+  } else if (err instanceof Error) {
+    message = err.message;
+    errorSources = [
+      {
+        path: "",
+        message: err?.message,
+      },
+    ];
+  }
 
   return res.status(statusCode).json({
     success: false,
-    message: message,
-    error: err,
+    message,
+    errorSources,
+    stack: config.node_env === "development" ? err?.stack : null,
   });
 };
 

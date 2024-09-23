@@ -36,7 +36,21 @@ const getAllBookings: RequestHandler = catchAsync(
     });
   }
 );
+const getMyBookings: RequestHandler = catchAsync(
+  // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+  async (req, res, next) => {
+    const userEmail = req.user.email;
+    const result = await BookingServices.getMyBookingsFromDB(userEmail);
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "My Bookings are retrieved Successfully!",
+      data: result,
+    });
+  }
+);
 export const BookingControllers = {
   createBooking,
   getAllBookings,
+  getMyBookings,
 };
